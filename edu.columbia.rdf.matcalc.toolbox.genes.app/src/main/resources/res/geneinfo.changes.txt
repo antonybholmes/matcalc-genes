@@ -1,0 +1,47 @@
+VERSION 8 - 01/27/15
+
+  * UI changes.
+  
+  
+VERSION 7 - 01/16/15
+
+  * Genes are no longer sorted.
+  
+  
+VERSION 6 - 01/08/15
+
+  * Fixed conversion to refseq bug.
+  
+  
+VERSION 5 - 12/16/14
+
+  * Allow human/mouse conversion to list genes even if they do not map.
+  
+  
+VERSION 4 - 12/05/14
+
+  * Improved mouse/human mapping.
+  
+  
+VERSION 3 - 11/12/14
+
+  * Support for reading and writing Excel files.
+  * Show both mapped and unmapped reads.
+  * Case sensitive/insensitive searching.
+  * Copes with alternative and synonyms.
+  * Map between human and mouse symbols.
+  * Optionally use Ensembl genes for annotation purposes.
+
+
+VERSION 2 - 10/24/14
+
+  * Improved icons.
+  * Ability to maintain Gene Symbols on rows.
+  * Check split symbols occur in close proximity to determine if hyphen
+  * denotes a read-through or gene notation.
+
+
+VERSION 1 - 10/20/14
+
+  * Added filter button to samples list to make it easier to filter by
+    search category.

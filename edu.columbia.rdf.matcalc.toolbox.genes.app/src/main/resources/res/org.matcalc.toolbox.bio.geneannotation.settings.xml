@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<!-- 
+	Application settings stored with the jar
+	This file must be named app_name.settings.xml where 
+	app_name is the application name in lower case with spaces removed. 
+	The first setting must be called app_name so that per app settings can
+	be merged.
+	-->
+	
+	<setting name="geneannotation.help.type" value="web"/>
+	<setting name="geneannotation.help.url" value="https://bitbucket.org/lab_rdf/matcalc/wiki/Gene_Annotation"/>
+
+</settings>
