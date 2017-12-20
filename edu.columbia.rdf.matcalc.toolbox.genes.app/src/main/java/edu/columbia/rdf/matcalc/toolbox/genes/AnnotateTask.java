@@ -12,6 +12,7 @@ import javax.swing.SwingWorker;
 import org.jebtk.bioinformatics.gapsearch.BinarySearch;
 import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
 import org.jebtk.bioinformatics.genomic.Chromosome;
+import org.jebtk.bioinformatics.genomic.ChromosomeService;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.Mathematics;
@@ -148,7 +149,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 			} else {
 				// three column format
 
-				region = new GenomicRegion(Chromosome.parse(model.getText(i, 0)),
+				region = new GenomicRegion(ChromosomeService.getInstance().parse(model.getText(i, 0)),
 						TextUtils.parseInt(model.getText(i, 1)),
 						TextUtils.parseInt(model.getText(i, 2)));
 			}
