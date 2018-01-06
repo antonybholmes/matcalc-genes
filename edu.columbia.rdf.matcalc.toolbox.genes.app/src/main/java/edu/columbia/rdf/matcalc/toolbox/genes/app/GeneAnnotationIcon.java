@@ -19,7 +19,7 @@ import org.jebtk.modern.ColorTheme;
 import org.jebtk.modern.graphics.icons.ModernApplicationIcon;
 
 public class GeneAnnotationIcon extends ModernApplicationIcon {
-	public GeneAnnotationIcon() {
-		super("G", "a", ColorTheme.GREEN);
-	}
+  public GeneAnnotationIcon() {
+    super("G", "a", ColorTheme.GREEN);
+  }
 }

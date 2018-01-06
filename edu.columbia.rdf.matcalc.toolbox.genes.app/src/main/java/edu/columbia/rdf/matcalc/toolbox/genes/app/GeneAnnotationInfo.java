@@ -31,22 +31,18 @@ import org.jebtk.core.AppVersion;
 import org.jebtk.modern.UIService;
 import org.jebtk.modern.help.GuiAppInfo;
 
-
 /**
  * The class GenesInfo.
  */
 public class GeneAnnotationInfo extends GuiAppInfo {
 
-	/**
-	 * Instantiates a new genes info.
-	 */
-	public GeneAnnotationInfo() {
-		super("Gene Annotation",
-				new AppVersion(1),
-				"Copyright (C) 2015-${year} Antony Holmes",
-				UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 32),
-				UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 128),
-				"Annotate genomic regions with genes.");
-	}
+  /**
+   * Instantiates a new genes info.
+   */
+  public GeneAnnotationInfo() {
+    super("Gene Annotation", new AppVersion(1), "Copyright (C) 2015-${year} Antony Holmes",
+        UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 32),
+        UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 128), "Annotate genomic regions with genes.");
+  }
 
 }

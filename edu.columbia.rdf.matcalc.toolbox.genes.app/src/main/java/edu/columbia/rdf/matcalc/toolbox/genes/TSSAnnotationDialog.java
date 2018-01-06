@@ -24,76 +24,75 @@ import edu.columbia.rdf.matcalc.bio.GenomesPanel;
  *
  */
 public class TSSAnnotationDialog extends ModernDialogHelpWindow {
-	private static final long serialVersionUID = 1L;
-	
-	private ModernCompactSpinner mTextExt5p = 
-			new ModernCompactSpinner(0, 100000, 2000, 1000, false);
-	
-	private ModernCompactSpinner mTextExt3p = 
-			new ModernCompactSpinner(0, 100000, 2000, 1000, false);
+  private static final long serialVersionUID = 1L;
 
-	//private SpeciesCombo mSpeciesCombo;
+  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
 
+  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
 
-	private GenomesPanel mGenomesPanel = new GenomesPanel();
-	
-	public TSSAnnotationDialog(ModernWindow parent) {
-		super(parent, "geneannotation.help.url");
-		
-		setTitle("TSS Annotation");
+  // private SpeciesCombo mSpeciesCombo;
 
-		createUi();
-		
-		setup();
-	}
+  private GenomesPanel mGenomesPanel = new GenomesPanel();
 
-	private void setup() {
-		addWindowListener(new WindowWidgetFocusEvents(mOkButton));
-		
-		setSize(640, 500);
-		
-		UI.centerWindowToScreen(this);
-	}
+  public TSSAnnotationDialog(ModernWindow parent) {
+    super(parent, "geneannotation.help.url");
 
-	private final void createUi() {
-		//this.getContentPane().add(new JLabel("Change " + getProductDetails().getProductName() + " settings", JLabel.LEFT), BorderLayout.PAGE_START);
+    setTitle("TSS Annotation");
 
-		Box box2;
-		
-		Box box = VBox.create();
-		sectionHeader("Genome", box);
+    createUi();
 
-		UI.setSize(mGenomesPanel, 600, 240);
-		box.add(mGenomesPanel);
-		
-		midSectionHeader("Buffer", box);
-		
-		box2 = HBox.create();
-		box2.add(new ModernAutoSizeLabel("5p"));
-		box2.add(ModernPanel.createHGap());
-		box2.add(mTextExt5p);
-		//box2.add(ModernPanel.createHGap());
-		//box2.add(new ModernAutoSizeLabel("bp"));
-		box2.add(UI.createHGap(20));
-		box2.add(new ModernAutoSizeLabel("3p"));
-		box2.add(ModernPanel.createHGap());
-		box2.add(mTextExt3p);
-		box2.add(ModernPanel.createHGap());
-		box2.add(new ModernAutoSizeLabel("bp"));
-		box.add(new HExpandBox("Promoter", box2));
-		
-		setCardContent(box);
-	}
+    setup();
+  }
 
-	public int getExt5p() {
-		return Math.abs(mTextExt5p.getIntValue());
-	}
-	
-	public int getExt3p() {
-		return Math.abs(mTextExt3p.getIntValue());
-	}
+  private void setup() {
+    addWindowListener(new WindowWidgetFocusEvents(mOkButton));
 
-	public List<String> getGenomes() {
-		return mGenomesPanel.getGenomes();
-	}
+    setSize(640, 500);
+
+    UI.centerWindowToScreen(this);
+  }
+
+  private final void createUi() {
+    // this.getContentPane().add(new JLabel("Change " +
+    // getProductDetails().getProductName() + " settings", JLabel.LEFT),
+    // BorderLayout.PAGE_START);
+
+    Box box2;
+
+    Box box = VBox.create();
+    sectionHeader("Genome", box);
+
+    UI.setSize(mGenomesPanel, 600, 240);
+    box.add(mGenomesPanel);
+
+    midSectionHeader("Buffer", box);
+
+    box2 = HBox.create();
+    box2.add(new ModernAutoSizeLabel("5p"));
+    box2.add(ModernPanel.createHGap());
+    box2.add(mTextExt5p);
+    // box2.add(ModernPanel.createHGap());
+    // box2.add(new ModernAutoSizeLabel("bp"));
+    box2.add(UI.createHGap(20));
+    box2.add(new ModernAutoSizeLabel("3p"));
+    box2.add(ModernPanel.createHGap());
+    box2.add(mTextExt3p);
+    box2.add(ModernPanel.createHGap());
+    box2.add(new ModernAutoSizeLabel("bp"));
+    box.add(new HExpandBox("Promoter", box2));
+
+    setCardContent(box);
+  }
+
+  public int getExt5p() {
+    return Math.abs(mTextExt5p.getIntValue());
+  }
+
+  public int getExt3p() {
+    return Math.abs(mTextExt3p.getIntValue());
+  }
+
+  public List<String> getGenomes() {
+    return mGenomesPanel.getGenomes();
+  }
 }
