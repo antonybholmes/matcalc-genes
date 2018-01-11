@@ -26,9 +26,11 @@ import edu.columbia.rdf.matcalc.bio.GenomesPanel;
 public class TSSAnnotationDialog extends ModernDialogHelpWindow {
   private static final long serialVersionUID = 1L;
 
-  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
+  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000,
+      2000, 1000, false);
 
-  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
+  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000,
+      2000, 1000, false);
 
   // private SpeciesCombo mSpeciesCombo;
 

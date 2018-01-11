@@ -13,12 +13,15 @@ import org.jebtk.modern.help.ModernMenuHelpItem;
 import org.jebtk.modern.menu.ModernPopupMenu;
 import org.jebtk.modern.menu.ModernTwoLineMenuItem;
 import org.jebtk.modern.ribbon.RibbonLargeDropDownButton;
+
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
 import edu.columbia.rdf.matcalc.toolbox.CalcModule;
 
-public class GeneAnnotationModule extends CalcModule implements ModernClickListener {
+public class GeneAnnotationModule extends CalcModule
+    implements ModernClickListener {
 
-  private static final ModernIcon ICON = UIService.getInstance().loadIcon("genes", 24);
+  private static final ModernIcon ICON = UIService.getInstance()
+      .loadIcon("genes", 24);
   private MainMatCalcWindow mWindow;
   private RibbonLargeDropDownButton mButton;
 
@@ -33,18 +36,21 @@ public class GeneAnnotationModule extends CalcModule implements ModernClickListe
 
     ModernPopupMenu popup = new ModernPopupMenu();
 
-    popup.addMenuItem(new ModernTwoLineMenuItem("Genes", "Annotate regions for overlapping genes.", ICON));
-    popup.addMenuItem(new ModernTwoLineMenuItem("TSS", "Annotate for gene TSS within a region", ICON));
+    popup.addMenuItem(new ModernTwoLineMenuItem("Genes",
+        "Annotate regions for overlapping genes.", ICON));
+    popup.addMenuItem(new ModernTwoLineMenuItem("TSS",
+        "Annotate for gene TSS within a region", ICON));
 
     // popup.addMenuItem(new ModernMenuSeparator());
 
-    popup.addMenuItem(
-        new ModernMenuHelpItem("Help with annotating regions...", "geneannotation.help.url").setTextOffset(48));
+    popup.addMenuItem(new ModernMenuHelpItem("Help with annotating regions...",
+        "geneannotation.help.url").setTextOffset(48));
 
     mButton = new RibbonLargeDropDownButton(ICON, popup);
     mButton.setToolTip("Annotate", "Annotate genomic regions.");
 
-    mWindow.getRibbon().getToolbar("Genomic").getSection("Annotation").add(mButton);
+    mWindow.getRibbon().getToolbar("Genomic").getSection("Annotation")
+        .add(mButton);
 
     mButton.addClickListener(this);
   }
@@ -84,14 +90,16 @@ public class GeneAnnotationModule extends CalcModule implements ModernClickListe
     List<String> genomes = dialog.getGenomes();
 
     if (genomes.size() == 0) {
-      ModernMessageDialog.createWarningDialog(mWindow, "You must select at least one annotation set.");
+      ModernMessageDialog.createWarningDialog(mWindow,
+          "You must select at least one annotation set.");
 
       annotate();
 
       return;
     }
 
-    AnnotateTask task = new AnnotateTask(mWindow, genomes, dialog.getShowOverlappingGenes(), dialog.getClosestList(),
+    AnnotateTask task = new AnnotateTask(mWindow, genomes,
+        dialog.getShowOverlappingGenes(), dialog.getClosestList(),
         dialog.getExt5p(), dialog.getExt3p());
 
     // task.execute();
@@ -115,7 +123,8 @@ public class GeneAnnotationModule extends CalcModule implements ModernClickListe
 
     List<String> genomes = dialog.getGenomes();
 
-    TSSAnnotateTask task = new TSSAnnotateTask(mWindow, genomes, dialog.getExt5p(), dialog.getExt3p());
+    TSSAnnotateTask task = new TSSAnnotateTask(mWindow, genomes,
+        dialog.getExt5p(), dialog.getExt3p());
 
     // task.execute();
 
