@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.util.List;
 
 import org.jebtk.modern.UIService;
+import org.jebtk.modern.button.ModernDropDownButton2;
 import org.jebtk.modern.dialog.ModernDialogStatus;
 import org.jebtk.modern.dialog.ModernMessageDialog;
 import org.jebtk.modern.event.ModernClickEvent;
 import org.jebtk.modern.event.ModernClickListener;
 import org.jebtk.modern.graphics.icons.ModernIcon;
 import org.jebtk.modern.help.ModernMenuHelpItem;
-import org.jebtk.modern.menu.ModernPopupMenu;
+import org.jebtk.modern.menu.ModernPopupMenu2;
 import org.jebtk.modern.menu.ModernTwoLineMenuItem;
-import org.jebtk.modern.ribbon.RibbonLargeDropDownButton;
+import org.jebtk.modern.ribbon.RibbonLargeDropDownButton2;
 
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
 import edu.columbia.rdf.matcalc.toolbox.CalcModule;
@@ -23,7 +24,7 @@ public class GeneAnnotationModule extends CalcModule
   private static final ModernIcon ICON = UIService.getInstance()
       .loadIcon("genes", 24);
   private MainMatCalcWindow mWindow;
-  private RibbonLargeDropDownButton mButton;
+  private ModernDropDownButton2 mButton;
 
   @Override
   public String getName() {
@@ -34,7 +35,7 @@ public class GeneAnnotationModule extends CalcModule
   public void init(MainMatCalcWindow window) {
     mWindow = window;
 
-    ModernPopupMenu popup = new ModernPopupMenu();
+    ModernPopupMenu2 popup = new ModernPopupMenu2();
 
     popup.addMenuItem(new ModernTwoLineMenuItem("Genes",
         "Annotate regions for overlapping genes.", ICON));
@@ -46,7 +47,7 @@ public class GeneAnnotationModule extends CalcModule
     popup.addMenuItem(new ModernMenuHelpItem("Help with annotating regions...",
         "geneannotation.help.url").setTextOffset(48));
 
-    mButton = new RibbonLargeDropDownButton(ICON, popup);
+    mButton = new RibbonLargeDropDownButton2(ICON, popup);
     mButton.setToolTip("Annotate", "Annotate genomic regions.");
 
     mWindow.getRibbon().getToolbar("Genomic").getSection("Annotation")
