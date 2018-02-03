@@ -10,7 +10,7 @@ import java.util.Set;
 import javax.swing.SwingWorker;
 
 import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
-import org.jebtk.bioinformatics.genomic.ChromosomeService;
+import org.jebtk.bioinformatics.genomic.GenomeService;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.collections.ArrayListCreator;
@@ -94,7 +94,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       } else {
         // three column format
         region = new GenomicRegion(
-            ChromosomeService.getInstance().parse(model.getText(i, 0)),
+            GenomeService.getInstance().human(model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }
