@@ -83,7 +83,7 @@ public class TSSAnnotationDialog extends ModernDialogHelpWindow {
     box2.add(new ModernAutoSizeLabel("bp"));
     box.add(new HExpandBox("Promoter", box2));
 
-    setCardContent(box);
+    setCard(box);
   }
 
   public int getExt5p() {
