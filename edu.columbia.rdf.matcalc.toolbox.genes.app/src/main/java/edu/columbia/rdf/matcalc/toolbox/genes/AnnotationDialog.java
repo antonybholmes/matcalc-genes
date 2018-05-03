@@ -160,7 +160,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
 
     setCard(box);
 
-    getTabsPane().addLeftTab("Genomes", mGenomesPanel, 200, 100, 400);
+    getTabsPane().tabs().left().add("Genomes", mGenomesPanel, 200, 100, 400);
   }
 
   @Override

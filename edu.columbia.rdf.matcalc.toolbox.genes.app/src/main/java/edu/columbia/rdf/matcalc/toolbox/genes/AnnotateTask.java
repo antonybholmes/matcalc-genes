@@ -11,6 +11,7 @@ import javax.swing.SwingWorker;
 
 import org.jebtk.bioinformatics.gapsearch.BinarySearch;
 import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
+import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.bioinformatics.genomic.GenomeService;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
@@ -143,12 +144,12 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       } else if (model.getText(i, 0).contains(TextUtils.NA)) {
         region = null;
       } else if (GenomicRegion.isGenomicRegion(model.getText(i, 0))) {
-        region = GenomicRegion.parse(model.getText(i, 0));
+        region = GenomicRegion.parse(Genome.NA, model.getText(i, 0));
       } else {
         // three column format
 
         region = new GenomicRegion(
-            GenomeService.instance().human(model.getText(i, 0)),
+            GenomeService.instance().chr(Genome.NA, model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }

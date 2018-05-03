@@ -39,7 +39,7 @@ import org.jebtk.modern.theme.ThemeService;
 import org.xml.sax.SAXException;
 
 import edu.columbia.rdf.matcalc.MainMatCalc;
-import edu.columbia.rdf.matcalc.BasicModuleLoader;
+import edu.columbia.rdf.matcalc.ModuleLoader;
 import edu.columbia.rdf.matcalc.bio.BioModuleLoader;
 import edu.columbia.rdf.matcalc.toolbox.genes.GeneAnnotationModule;
 
@@ -55,7 +55,7 @@ public class MainGeneAnnotation {
 
     ThemeService.getInstance().setTheme(ColorTheme.GREEN);
 
-    BasicModuleLoader ml = new BioModuleLoader()
+    ModuleLoader ml = new BioModuleLoader()
         .addModule(GeneAnnotationModule.class);
 
     MainMatCalc.main(new GeneAnnotationInfo(), ml);
