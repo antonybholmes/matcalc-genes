@@ -11,7 +11,6 @@ import javax.swing.SwingWorker;
 
 import org.jebtk.bioinformatics.gapsearch.BinarySearch;
 import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
-import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.bioinformatics.genomic.GenomeService;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
@@ -26,10 +25,10 @@ import org.jebtk.math.matrix.DataFrame;
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
 import edu.columbia.rdf.matcalc.bio.AnnotationGene;
 import edu.columbia.rdf.matcalc.bio.AnnotationService;
+import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 
 public class AnnotateTask extends SwingWorker<Void, Void> {
 
-  private List<String> mGenomes;
   private DataFrame mNewModel;
   // private boolean mShow2ndClosest;
   // private boolean mShow1stClosest;
@@ -42,11 +41,12 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
   private int mExt3p = 4000;
   private List<Integer> mClosestGenes;
   private MainMatCalcWindow mWindow;
+  private GenomeDatabase mGenome;
 
-  public AnnotateTask(MainMatCalcWindow window, List<String> genomes,
+  public AnnotateTask(MainMatCalcWindow window, GenomeDatabase genome,
       boolean allSearch, List<Integer> closestGenes, int ext5p, int ext3p) {
     mWindow = window;
-    mGenomes = genomes;
+    mGenome = genome;
     mShowOverlappingGenes = allSearch;
     mClosestGenes = closestGenes;
 
@@ -78,19 +78,19 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     // See how many extra columns are needed
     int extra = 0;
 
-    for (String genome : mGenomes) {
-      List<String> geneIdTypes = AnnotationService.getInstance()
-          .getGeneIdTypes(genome);
+    List<String> geneIdTypes = AnnotationService.getInstance()
+        .getGeneIdTypes(mGenome);
 
-      int closestSize = 4 + geneIdTypes.size();
+    System.err.println("ttpes " + geneIdTypes);
 
-      if (mShowOverlappingGenes) {
-        extra += 3 + geneIdTypes.size();
-      }
+    int closestSize = 4 + geneIdTypes.size();
 
-      for (int i = 0; i < mClosestGenes.size(); ++i) {
-        extra += closestSize;
-      }
+    if (mShowOverlappingGenes) {
+      extra += 3 + geneIdTypes.size();
+    }
+
+    for (int i = 0; i < mClosestGenes.size(); ++i) {
+      extra += closestSize;
     }
 
     DataFrame matrix = DataFrame.createDataFrame(model.getRows(),
@@ -104,28 +104,26 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
     int c = model.getCols();
 
-    for (String genome : mGenomes) {
-      List<String> geneIdTypes = AnnotationService.getInstance()
-          .getGeneIdTypes(genome);
+    geneIdTypes = AnnotationService.getInstance()
+        .getGeneIdTypes(mGenome);
 
-      if (mShowOverlappingGenes) {
-        for (String name : geneIdTypes) {
-          matrix.setColumnName(c++, "Overlap " + name);
-        }
-
-        matrix.setColumnName(c++, "Strand");
-        matrix.setColumnName(c++,
-            "Region Relative To Gene (prom=-" + (mExt5p / 1000) + "/+"
-                + (mExt3p / 1000) + "kb)");
-        matrix.setColumnName(c++, "Region TSS Distance (bp)");
+    if (mShowOverlappingGenes) {
+      for (String name : geneIdTypes) {
+        matrix.setColumnName(c++, "Overlap " + name);
       }
 
-      for (int closest : mClosestGenes) {
-        c = createClosestHeader(TextUtils.formatOrder(closest),
-            geneIdTypes,
-            c,
-            matrix);
-      }
+      matrix.setColumnName(c++, "Strand");
+      matrix.setColumnName(c++,
+          "Region Relative To Gene (prom=-" + (mExt5p / 1000) + "/+"
+              + (mExt3p / 1000) + "kb)");
+      matrix.setColumnName(c++, "Region TSS Distance (bp)");
+    }
+
+    for (int closest : mClosestGenes) {
+      c = createClosestHeader(TextUtils.formatOrder(closest),
+          geneIdTypes,
+          c,
+          matrix);
     }
 
     //
@@ -144,12 +142,12 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       } else if (model.getText(i, 0).contains(TextUtils.NA)) {
         region = null;
       } else if (GenomicRegion.isGenomicRegion(model.getText(i, 0))) {
-        region = GenomicRegion.parse(Genome.NA, model.getText(i, 0));
+        region = GenomicRegion.parse(mGenome.getGenome(), model.getText(i, 0));
       } else {
         // three column format
 
         region = new GenomicRegion(
-            GenomeService.instance().chr(Genome.NA, model.getText(i, 0)),
+            GenomeService.instance().chr(mGenome.getGenome(), model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }
@@ -171,72 +169,70 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       //
 
       if (mShowOverlappingGenes) {
-        for (String genome : mGenomes) {
-          List<String> geneIdTypes = AnnotationService.getInstance()
-              .getGeneIdTypes(genome);
+        geneIdTypes = AnnotationService.getInstance()
+            .getGeneIdTypes(mGenome);
 
-          FixedGapSearch<AnnotationGene> tssSearch = AnnotationService
-              .getInstance().getSearch(genome, mExt5p, mExt3p);
+        FixedGapSearch<AnnotationGene> tssSearch = AnnotationService
+            .getInstance().getSearch(mGenome.getGenome(), mGenome.getDb(), mExt5p, mExt3p);
 
-          List<AnnotationGene> results = tssSearch.getFeatureSet(region);
+        List<AnnotationGene> results = tssSearch.getFeatureSet(region);
 
-          List<AnnotationGene> overlappingResults = new ArrayList<AnnotationGene>(
-              results.size());
+        List<AnnotationGene> overlappingResults = new ArrayList<AnnotationGene>(
+            results.size());
 
-          for (AnnotationGene gene : results) {
-            System.err.println(region.getLocation() + ":" + gene.getSymbol()
-                + " " + gene.getLocation());
+        for (AnnotationGene gene : results) {
+          System.err.println(region.getLocation() + ":" + gene.getSymbol()
+          + " " + gene.getLocation());
 
-            // Genes have been extended at tss to -5
-            if (GenomicRegion.overlap(region, gene) != null) {
-              overlappingResults.add(gene);
-            }
+          // Genes have been extended at tss to -5
+          if (GenomicRegion.overlap(region, gene) != null) {
+            overlappingResults.add(gene);
+          }
+        }
+
+        int n = overlappingResults.size();
+
+        // List<String> allRefseqs = new ArrayList<String>();
+        List<String> allClassifications = new ArrayList<String>(n);
+        List<String> allTssDist = new ArrayList<String>(n);
+        // List<String> allGenes = new ArrayList<String>(n);
+        List<Character> allStrands = new ArrayList<Character>(n);
+
+        for (AnnotationGene gene : overlappingResults) {
+
+          // System.err.println("gene " + gene.getSymbol() + " " +
+          // gene.getRefSeq() + " "
+          // + gene.getRegion().getStart() + " " + gene.getRegion().getEnd());
+
+          // Select one refseq
+          // String refseq = CollectionUtils.sort(entrezMap.get(gene)).get(0);
+
+          // allGenes.add(symbolMap.get(refseq).getSymbol());
+          allStrands.add(Strand.toChar(gene.getStrand()));
+
+          // allRefseqs.add(refseq);
+
+          Set<String> classifications = new HashSet<String>();
+
+          classify(gene, midPoint, classifications, allTssDist);
+
+          allClassifications.add(Join.onComma()
+              .values(CollectionUtils
+                  .reverse(CollectionUtils.sort(classifications)))
+              .toString());
+        }
+
+        if (overlappingResults.size() > 0) {
+          for (String name : geneIdTypes) {
+            matrix.set(i, c++, formatGeneIds(name, overlappingResults));
           }
 
-          int n = overlappingResults.size();
-
-          // List<String> allRefseqs = new ArrayList<String>();
-          List<String> allClassifications = new ArrayList<String>(n);
-          List<String> allTssDist = new ArrayList<String>(n);
-          // List<String> allGenes = new ArrayList<String>(n);
-          List<Character> allStrands = new ArrayList<Character>(n);
-
-          for (AnnotationGene gene : overlappingResults) {
-
-            // System.err.println("gene " + gene.getSymbol() + " " +
-            // gene.getRefSeq() + " "
-            // + gene.getRegion().getStart() + " " + gene.getRegion().getEnd());
-
-            // Select one refseq
-            // String refseq = CollectionUtils.sort(entrezMap.get(gene)).get(0);
-
-            // allGenes.add(symbolMap.get(refseq).getSymbol());
-            allStrands.add(Strand.toChar(gene.getStrand()));
-
-            // allRefseqs.add(refseq);
-
-            Set<String> classifications = new HashSet<String>();
-
-            classify(gene, midPoint, classifications, allTssDist);
-
-            allClassifications.add(Join.onComma()
-                .values(CollectionUtils
-                    .reverse(CollectionUtils.sort(classifications)))
-                .toString());
-          }
-
-          if (overlappingResults.size() > 0) {
-            for (String name : geneIdTypes) {
-              matrix.set(i, c++, formatGeneIds(name, overlappingResults));
-            }
-
-            matrix.set(i, c++, TextUtils.scJoin(allStrands));
-            matrix.set(i, c++, TextUtils.scJoin(allClassifications));
-            matrix.set(i, c++, TextUtils.scJoin(allTssDist));
-          } else {
-            // Fill the blanks
-            c = repeatNA(geneIdTypes.size() + 3, i, c, matrix);
-          }
+          matrix.set(i, c++, TextUtils.scJoin(allStrands));
+          matrix.set(i, c++, TextUtils.scJoin(allClassifications));
+          matrix.set(i, c++, TextUtils.scJoin(allTssDist));
+        } else {
+          // Fill the blanks
+          c = repeatNA(geneIdTypes.size() + 3, i, c, matrix);
         }
       }
 
@@ -249,25 +245,23 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
         // We select the maximum nth closest gene desired
         int maxClosest = Mathematics.maxInt(mClosestGenes) - 1;
 
-        for (String genome : mGenomes) {
-          List<String> geneIdTypes = AnnotationService.getInstance()
-              .getGeneIdTypes(genome);
+        geneIdTypes = AnnotationService.getInstance()
+            .getGeneIdTypes(mGenome);
 
-          BinarySearch<AnnotationGene> tssSearch = AnnotationService
-              .getInstance().getBinarySearch(genome, mExt5p, mExt3p);
+        BinarySearch<AnnotationGene> tssSearch = AnnotationService
+            .getInstance().getBinarySearch(mGenome.getGenome(), mGenome.getDb(), mExt5p, mExt3p);
 
-          // System.err.println("closest " + closest + " " + c + " " +
-          // tssSearch.getName());
+        // System.err.println("closest " + closest + " " + c + " " +
+        // tssSearch.getName());
 
-          // Find all closest genes between 1 and n
-          List<List<AnnotationGene>> results = tssSearch
-              .getClosestFeatures(midRegion, maxClosest);
+        // Find all closest genes between 1 and n
+        List<List<AnnotationGene>> results = tssSearch
+            .getClosestFeatures(midRegion, maxClosest);
 
-          for (int closest : mClosestGenes) {
-            // Select the ones of interest
-            c = annotateClosest(results
-                .get(closest - 1), geneIdTypes, midPoint, i, c, matrix);
-          }
+        for (int closest : mClosestGenes) {
+          // Select the ones of interest
+          c = annotateClosest(results
+              .get(closest - 1), geneIdTypes, midPoint, i, c, matrix);
         }
       }
     }
@@ -325,7 +319,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     matrix.setColumnName(c++, label + " Closest TSS Location");
     matrix.setColumnName(c++,
         label + " Closest Region Relative To Gene (prom=-" + (mExt5p / 1000)
-            + "/+" + (mExt3p / 1000) + "kb)");
+        + "/+" + (mExt3p / 1000) + "kb)");
     matrix.setColumnName(c++, label + " Closest Region TSS Distance (bp)");
 
     return c;

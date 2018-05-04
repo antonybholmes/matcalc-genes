@@ -16,6 +16,7 @@ import org.jebtk.modern.menu.ModernTwoLineMenuItem;
 import org.jebtk.modern.ribbon.RibbonLargeDropDownButton2;
 
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
+import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 import edu.columbia.rdf.matcalc.toolbox.CalcModule;
 
 public class GeneAnnotationModule extends CalcModule
@@ -88,7 +89,7 @@ public class GeneAnnotationModule extends CalcModule
       return;
     }
 
-    List<String> genomes = dialog.getGenomes();
+    List<GenomeDatabase> genomes = dialog.getGenomes();
 
     if (genomes.size() == 0) {
       ModernMessageDialog.createWarningDialog(mWindow,
@@ -99,7 +100,7 @@ public class GeneAnnotationModule extends CalcModule
       return;
     }
 
-    AnnotateTask task = new AnnotateTask(mWindow, genomes,
+    AnnotateTask task = new AnnotateTask(mWindow, genomes.get(0),
         dialog.getShowOverlappingGenes(), dialog.getClosestList(),
         dialog.getExt5p(), dialog.getExt3p());
 
@@ -122,9 +123,9 @@ public class GeneAnnotationModule extends CalcModule
       return;
     }
 
-    List<String> genomes = dialog.getGenomes();
+    List<GenomeDatabase> genomes = dialog.getGenomes();
 
-    TSSAnnotateTask task = new TSSAnnotateTask(mWindow, genomes,
+    TSSAnnotateTask task = new TSSAnnotateTask(mWindow, genomes.get(0),
         dialog.getExt5p(), dialog.getExt3p());
 
     // task.execute();

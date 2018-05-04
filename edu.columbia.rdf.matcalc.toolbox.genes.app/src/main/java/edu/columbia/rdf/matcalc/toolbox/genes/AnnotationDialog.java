@@ -30,6 +30,7 @@ import org.jebtk.modern.window.ModernWindow;
 import org.jebtk.modern.window.WindowWidgetFocusEvents;
 
 import edu.columbia.rdf.matcalc.bio.AnnotationSidePanel;
+import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 
 /**
  * Control which conservation scores are shown.
@@ -209,7 +210,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
     return Math.abs(mTextExt3p.getIntValue());
   }
 
-  public List<String> getGenomes() {
+  public List<GenomeDatabase> getGenomes() {
     return mGenomesPanel.getGenomes();
   }
 
