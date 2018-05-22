@@ -96,7 +96,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       } else {
         // three column format
         region = new GenomicRegion(
-            GenomeService.instance().chr(Genome.NA, model.getText(i, 0)),
+            GenomeService.getInstance().chr(Genome.NA, model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }

@@ -28,7 +28,7 @@
 package edu.columbia.rdf.matcalc.toolbox.genes.app;
 
 import org.jebtk.core.AppVersion;
-import org.jebtk.modern.UIService;
+import org.jebtk.modern.AssetService;
 import org.jebtk.modern.help.GuiAppInfo;
 
 /**
@@ -42,8 +42,8 @@ public class GeneAnnotationInfo extends GuiAppInfo {
   public GeneAnnotationInfo() {
     super("Gene Annotation", new AppVersion(1),
         "Copyright (C) 2015-${year} Antony Holmes",
-        UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 32),
-        UIService.getInstance().loadIcon(GeneAnnotationIcon.class, 128),
+        AssetService.getInstance().loadIcon(GeneAnnotationIcon.class, 32),
+        AssetService.getInstance().loadIcon(GeneAnnotationIcon.class, 128),
         "Annotate genomic regions with genes.");
   }
 

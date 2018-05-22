@@ -3,7 +3,7 @@ package edu.columbia.rdf.matcalc.toolbox.genes;
 import java.io.IOException;
 import java.util.List;
 
-import org.jebtk.modern.UIService;
+import org.jebtk.modern.AssetService;
 import org.jebtk.modern.button.ModernDropDownButton2;
 import org.jebtk.modern.dialog.ModernDialogStatus;
 import org.jebtk.modern.dialog.ModernMessageDialog;
@@ -22,7 +22,7 @@ import edu.columbia.rdf.matcalc.toolbox.CalcModule;
 public class GeneAnnotationModule extends CalcModule
     implements ModernClickListener {
 
-  private static final ModernIcon ICON = UIService.getInstance()
+  private static final ModernIcon ICON = AssetService.getInstance()
       .loadIcon("genes", 24);
   private MainMatCalcWindow mWindow;
   private ModernDropDownButton2 mButton;

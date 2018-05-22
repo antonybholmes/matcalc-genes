@@ -147,7 +147,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
         // three column format
 
         region = new GenomicRegion(
-            GenomeService.instance().chr(mGenome.getGenome(), model.getText(i, 0)),
+            GenomeService.getInstance().chr(mGenome.getGenome(), model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }
