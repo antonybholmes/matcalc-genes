@@ -16,8 +16,8 @@ import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
-import org.jebtk.core.collections.DefaultOrderedHashMap;
-import org.jebtk.core.collections.DefaultOrderedHashMapCreator;
+import org.jebtk.core.collections.DefaultTreeMap;
+import org.jebtk.core.collections.DefaultTreeMapCreator;
 import org.jebtk.core.collections.IterMap;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.io.Io;
@@ -78,8 +78,8 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     // Process each row
     //
 
-    IterMap<GenomicRegion, IterMap<String, List<AnnotationGene>>> overlappingResults = DefaultOrderedHashMap
-        .create(new DefaultOrderedHashMapCreator<String, List<AnnotationGene>>(
+    IterMap<GenomicRegion, IterMap<String, List<AnnotationGene>>> overlappingResults = DefaultTreeMap
+        .create(new DefaultTreeMapCreator<String, List<AnnotationGene>>(
             new ArrayListCreator<AnnotationGene>(100)));
 
     List<GenomicRegion> regions = new ArrayList<GenomicRegion>();
@@ -92,11 +92,11 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       } else if (model.getText(i, 0).contains(TextUtils.NA)) {
         region = null;
       } else if (GenomicRegion.isGenomicRegion(model.getText(i, 0))) {
-        region = GenomicRegion.parse(Genome.NA, model.getText(i, 0));
+        region = GenomicRegion.parse(Genome.HG19, model.getText(i, 0));
       } else {
         // three column format
         region = new GenomicRegion(
-            GenomeService.getInstance().chr(Genome.NA, model.getText(i, 0)),
+            GenomeService.getInstance().chr(Genome.HG19, model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }
