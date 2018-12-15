@@ -68,7 +68,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
   @Override
   public void done() {
     if (mNewModel != null) {
-      mWindow.addToHistory("Add Annotation", mNewModel);
+      mWindow.history().addToHistory("Add Annotation", mNewModel);
     }
   }
 

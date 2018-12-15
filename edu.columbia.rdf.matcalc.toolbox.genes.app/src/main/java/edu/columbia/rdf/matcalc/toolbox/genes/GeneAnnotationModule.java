@@ -17,9 +17,9 @@ import org.jebtk.modern.ribbon.RibbonLargeDropDownButton2;
 
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
 import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
-import edu.columbia.rdf.matcalc.toolbox.CalcModule;
+import edu.columbia.rdf.matcalc.toolbox.Module;
 
-public class GeneAnnotationModule extends CalcModule
+public class GeneAnnotationModule extends Module
     implements ModernClickListener {
 
   private static final ModernIcon ICON = AssetService.getInstance()
