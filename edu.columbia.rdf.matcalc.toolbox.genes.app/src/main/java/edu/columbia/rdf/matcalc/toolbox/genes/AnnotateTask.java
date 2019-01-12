@@ -96,7 +96,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     DataFrame matrix = DataFrame.createDataFrame(model.getRows(),
         model.getCols() + extra);
 
-    DataFrame.copyColumnAnnotations(model, matrix);
+    DataFrame.copyColumnHeaders(model, matrix);
 
     //
     // Create the new header

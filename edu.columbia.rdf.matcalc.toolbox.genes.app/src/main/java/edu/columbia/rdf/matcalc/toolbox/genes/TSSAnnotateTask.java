@@ -142,7 +142,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     DataFrame matrix = DataFrame.createDataFrame(model.getRows(),
         model.getCols() + extra);
 
-    DataFrame.copyColumnAnnotations(model, matrix);
+    DataFrame.copyColumnHeaders(model, matrix);
 
     // Add the extra columns
     int c = model.getCols();

@@ -23,7 +23,7 @@ import edu.columbia.rdf.matcalc.bio.GenomesPanel;
 /**
  * Control which conservation scores are shown.
  * 
- * @author Antony Holmes Holmes
+ * @author Antony Holmes
  *
  */
 public class TSSAnnotationDialog extends ModernDialogHelpWindow {
