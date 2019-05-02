@@ -17,7 +17,6 @@ import org.jebtk.modern.text.ModernAutoSizeLabel;
 import org.jebtk.modern.window.ModernWindow;
 import org.jebtk.modern.window.WindowWidgetFocusEvents;
 
-import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 import edu.columbia.rdf.matcalc.bio.GenomesPanel;
 
 /**
@@ -97,13 +96,13 @@ public class TSSAnnotationDialog extends ModernDialogHelpWindow {
     return Math.abs(mTextExt3p.getIntValue());
   }
 
-  public List<GenomeDatabase> getGenomes() {
-    List<String> genomes = mGenomesPanel.getGenomes();
+  public List<Genome> getGenomes() {
+    List<String> genomeIds = mGenomesPanel.getGenomesIds();
     
-    List<GenomeDatabase> ret = new ArrayList<GenomeDatabase>(genomes.size());
+    List<Genome> ret = new ArrayList<Genome>(genomeIds.size());
     
-    for (String g : genomes) {
-      ret.add(new GenomeDatabase(Genome.HG19, g));
+    for (String g : genomeIds) {
+      ret.add(Genome.fromId(g));
     }
     
     return ret;

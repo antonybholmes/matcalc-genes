@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.swing.Box;
 
+import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.text.Splitter;
 import org.jebtk.modern.UI;
@@ -30,7 +31,6 @@ import org.jebtk.modern.window.ModernWindow;
 import org.jebtk.modern.window.WindowWidgetFocusEvents;
 
 import edu.columbia.rdf.matcalc.bio.AnnotationSidePanel;
-import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 
 /**
  * Control which conservation scores are shown.
@@ -79,7 +79,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
 
   // private SpeciesCombo mSpeciesCombo;
 
-  private AnnotationSidePanel mGenomesPanel = new AnnotationSidePanel();
+  private AnnotationSidePanel mGenomesPanel = new AnnotationSidePanel("ucsc_refseq_hg19_20190430");
 
   public AnnotationDialog(ModernWindow parent) {
     super(parent, "geneannotation.help.url");
@@ -210,7 +210,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
     return Math.abs(mTextExt3p.getIntValue());
   }
 
-  public List<GenomeDatabase> getGenomes() {
+  public List<Genome> getGenomes() {
     return mGenomesPanel.getGenomes();
   }
 

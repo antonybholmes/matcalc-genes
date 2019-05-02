@@ -3,6 +3,7 @@ package edu.columbia.rdf.matcalc.toolbox.genes;
 import java.io.IOException;
 import java.util.List;
 
+import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.modern.AssetService;
 import org.jebtk.modern.button.ModernDropDownButton2;
 import org.jebtk.modern.dialog.ModernDialogStatus;
@@ -16,7 +17,6 @@ import org.jebtk.modern.menu.ModernTwoLineMenuItem;
 import org.jebtk.modern.ribbon.RibbonLargeDropDownButton2;
 
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
-import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 import edu.columbia.rdf.matcalc.toolbox.Module;
 
 public class GeneAnnotationModule extends Module
@@ -53,7 +53,7 @@ public class GeneAnnotationModule extends Module
 
     mWindow.getRibbon().getToolbar("Genomic").getSection("Annotation")
         .add(mButton);
-
+ 
     mButton.addClickListener(this);
   }
 
@@ -89,7 +89,7 @@ public class GeneAnnotationModule extends Module
       return;
     }
 
-    List<GenomeDatabase> genomes = dialog.getGenomes();
+    List<Genome> genomes = dialog.getGenomes();
 
     if (genomes.size() == 0) {
       ModernMessageDialog.createWarningDialog(mWindow,
@@ -123,7 +123,7 @@ public class GeneAnnotationModule extends Module
       return;
     }
 
-    List<GenomeDatabase> genomes = dialog.getGenomes();
+    List<Genome> genomes = dialog.getGenomes();
 
     TSSAnnotateTask task = new TSSAnnotateTask(mWindow, genomes.get(0),
         dialog.getExt5p(), dialog.getExt3p());

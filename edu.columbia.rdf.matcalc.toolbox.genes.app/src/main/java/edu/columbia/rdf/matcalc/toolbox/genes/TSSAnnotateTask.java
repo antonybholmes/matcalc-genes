@@ -10,8 +10,12 @@ import java.util.Set;
 import javax.swing.SwingWorker;
 
 import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
+import org.jebtk.bioinformatics.genomic.GFF3Parser;
+import org.jebtk.bioinformatics.genomic.GenesDB;
 import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.bioinformatics.genomic.GenomeService;
+import org.jebtk.bioinformatics.genomic.GenomicElement;
+import org.jebtk.bioinformatics.genomic.GenomicEntity;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.collections.ArrayListCreator;
@@ -26,9 +30,7 @@ import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.matrix.DataFrame;
 
 import edu.columbia.rdf.matcalc.MainMatCalcWindow;
-import edu.columbia.rdf.matcalc.bio.AnnotationGene;
 import edu.columbia.rdf.matcalc.bio.AnnotationService;
-import edu.columbia.rdf.matcalc.bio.GenomeDatabase;
 
 public class TSSAnnotateTask extends SwingWorker<Void, Void> {
 
@@ -42,9 +44,9 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
   private int mExt5p = 5000;
   private int mExt3p = 4000;
   private MainMatCalcWindow mWindow;
-  private GenomeDatabase mGenome;
+  private Genome mGenome;
 
-  public TSSAnnotateTask(MainMatCalcWindow window, GenomeDatabase genome,
+  public TSSAnnotateTask(MainMatCalcWindow window, Genome genome,
       int ext5p, int ext3p) {
     mWindow = window;
     mGenome = genome;
@@ -78,9 +80,9 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     // Process each row
     //
 
-    IterMap<GenomicRegion, IterMap<String, List<AnnotationGene>>> overlappingResults = DefaultTreeMap
-        .create(new DefaultTreeMapCreator<String, List<AnnotationGene>>(
-            new ArrayListCreator<AnnotationGene>(100)));
+    IterMap<GenomicRegion, IterMap<Genome, List<GenomicElement>>> overlappingResults = DefaultTreeMap
+        .create(new DefaultTreeMapCreator<Genome, List<GenomicElement>>(
+            new ArrayListCreator<GenomicElement>(100)));
 
     List<GenomicRegion> regions = new ArrayList<GenomicRegion>();
 
@@ -112,19 +114,19 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
 
       regions.add(newRegion);
 
-      FixedGapSearch<AnnotationGene> tssSearch = AnnotationService
+      GenesDB tssSearch = AnnotationService
           .getInstance().getSearch(mGenome);
 
-      List<AnnotationGene> results = tssSearch.getFeatureSet(newRegion);
+      List<GenomicElement> results = tssSearch.find(mGenome, newRegion, GenomicEntity.EXON);
 
-      for (AnnotationGene gene : results) {
+      for (GenomicElement gene : results) {
         // System.err.println(region.getLocation() + ":" + gene.getSymbol() +
         // " " +
         // gene);
 
         // Check that Gene tss lies within region
         if (GenomicRegion.overlap(newRegion, gene.getTss()) != null) {
-          overlappingResults.get(newRegion).get(mGenome.getGenome()).add(gene);
+          overlappingResults.get(newRegion).get(mGenome).add(gene);
         }
       }
     }
@@ -135,7 +137,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     int extra = 0;
 
     List<String> geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome);
+        .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
 
     extra += geneIdTypes.size() + 4;
 
@@ -148,7 +150,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     int c = model.getCols();
 
     geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome);
+        .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
 
     for (String name : geneIdTypes) {
       matrix.setColumnName(c++, mGenome + " TSS " + name);
@@ -168,10 +170,10 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       c = model.getCols();
 
       geneIdTypes = AnnotationService.getInstance()
-          .getGeneIdTypes(mGenome);
+          .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
 
-      List<AnnotationGene> results = overlappingResults.get(region)
-          .get(mGenome.getGenome());
+      List<GenomicElement> results = overlappingResults.get(region)
+          .get(mGenome);
 
       int n = results.size();
 
@@ -181,7 +183,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
         List<Integer> dist3p = new ArrayList<Integer>(n);
         List<Character> allStrands = new ArrayList<Character>(n);
 
-        for (AnnotationGene gene : results) {
+        for (GenomicElement gene : results) {
           int pd5;
           int pd3;
 
@@ -239,11 +241,11 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
    * @param genes
    * @return
    */
-  private String formatGeneIds(String name, List<AnnotationGene> genes) {
+  private String formatGeneIds(String name, List<GenomicElement> genes) {
     List<String> items = new UniqueArrayList<String>(genes.size());
 
-    for (AnnotationGene gene : genes) {
-      items.add(gene.getAltName(name));
+    for (GenomicElement gene : genes) {
+      items.add(gene.getProp(name));
     }
 
     return Join.onSemiColon().values(items).toString();
@@ -271,26 +273,16 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     return c;
   }
 
-  private int annotateClosest(final List<AnnotationGene> results,
+  private int annotateClosest(final List<GenomicElement> results,
       final List<String> geneIdTypes,
       int midPoint,
       int row,
       int c,
       DataFrame matrix) {
 
-    /*
-     * Map<String, AnnotationGene> entrezMap = new HashMap<String,
-     * AnnotationGene>();
-     * 
-     * if (results != null) { for (AnnotationGene gene : results) {
-     * //System.err.println(gene.getRefSeq() + " " + gene.getSymbol());
-     * 
-     * entrezMap.put(gene.getRefSeq(), gene); } }
-     */
-
     if (results.size() > 0) {
       // If there are more than one, pick the first
-      AnnotationGene gene = results.get(0); // CollectionUtils.sortKeys(entrezMap).get(0);
+      GenomicElement gene = results.get(0); // CollectionUtils.sortKeys(entrezMap).get(0);
 
       Set<String> classifications = new HashSet<String>();
 
@@ -302,8 +294,8 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       /*
        * int tssDist = Integer.MAX_VALUE;
        * 
-       * //for (AnnotationGene gene : results) { tssDist = Math.min(tssDist,
-       * AnnotationGene.getTssMidDist(gene, midPoint));
+       * //for (GenomicElement gene : results) { tssDist = Math.min(tssDist,
+       * GenomicElement.getTssMidDist(gene, midPoint));
        * 
        * if (withinBounds(gene, midPoint)) { if (tssDist >= -mExt5p && tssDist
        * <= mExt3p) { classifications.add("promoter"); }
@@ -325,7 +317,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
        */
 
       for (String type : geneIdTypes) {
-        matrix.set(row, c++, gene.getAltName(type));
+        matrix.set(row, c++, gene.getProp(type));
       }
 
       // matrix.set(row, c++, refseq);
@@ -351,11 +343,11 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     return c;
   }
 
-  private int classify(AnnotationGene gene,
+  private int classify(GenomicElement gene,
       int midPoint,
       Set<String> classifications,
       List<String> allTssDist) {
-    int tssDist = AnnotationGene.getTssMidDist(gene, midPoint);
+    int tssDist = GenomicElement.getTssMidDist(gene, midPoint);
 
     if (withinBounds(gene, midPoint)) {
       if (tssDist >= -mExt5p && tssDist <= mExt3p) {
@@ -364,7 +356,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
 
       boolean inExon = false;
 
-      for (GenomicRegion exon : gene.getExons()) {
+      for (GenomicRegion exon : gene.getChildren(GenomicEntity.EXON)) {
         if (GenomicRegion.within(midPoint, exon)) {
           classifications.add("exonic");
           inExon = true;
@@ -407,7 +399,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
    * @param midPoint
    * @return
    */
-  private boolean withinBounds(AnnotationGene gene, int midPoint) {
+  private boolean withinBounds(GenomicElement gene, int midPoint) {
     if (gene.getStrand() == Strand.SENSE) {
       return midPoint >= gene.getStart() - mExt5p && midPoint <= gene.getEnd();
     } else {
