@@ -16,6 +16,7 @@ import org.jebtk.bioinformatics.genomic.GenomeService;
 import org.jebtk.bioinformatics.genomic.GenomicElement;
 import org.jebtk.bioinformatics.genomic.GenomicEntity;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
+import org.jebtk.bioinformatics.genomic.GenomicType;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
@@ -80,7 +81,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     int extra = 0;
 
     List<String> geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
+        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     int closestSize = 4 + geneIdTypes.size();
 
@@ -104,7 +105,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     int c = model.getCols();
 
     geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GenomicEntity.TRANSCRIPT);
+        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     if (mShowOverlappingGenes) {
       for (String name : geneIdTypes) {
@@ -171,14 +172,14 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
       if (mShowOverlappingGenes) {
         geneIdTypes = AnnotationService.getInstance()
-            .getGeneIdTypes(mGenome, GenomicEntity.TRANSCRIPT);
+            .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
         GenesDB tssSearch = AnnotationService
             .getInstance().getSearch(mGenome, mExt5p, mExt3p);
         
         List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, 
             region, 
-            GenomicEntity.TRANSCRIPT);
+            GenomicType.TRANSCRIPT);
 
         //List<GenomicElement> overlappingResults = new ArrayList<GenomicElement>(
         //    results.size());
@@ -237,7 +238,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
           matrix.set(i, c++, TextUtils.scJoin(allTssDist));
         } else {
           // Fill the blanks
-          c = repeatNA(geneIdTypes.size() + 3, i, c, matrix);
+          c = repeatNA(geneIdTypes.size() + 4, i, c, matrix);
         }
       }
 
@@ -251,7 +252,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
         int maxClosest = Mathematics.maxInt(mClosestGenes); // - 1;
 
         geneIdTypes = AnnotationService.getInstance()
-            .getGeneIdTypes(mGenome, GenomicEntity.TRANSCRIPT);
+            .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
  
         //BinarySearch<AnnotationGene> tssSearch = AnnotationService
         //    .getInstance().getBinarySearch(mGenome, mExt5p, mExt3p);
@@ -264,7 +265,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
         // Find all closest genes between 1 and n
         List<List<GenomicElement>> results = tssSearch
-            .getClosestFeatures(mGenome, midRegion, maxClosest, GenomicEntity.TRANSCRIPT);
+            .nthClosest(mGenome, midRegion, maxClosest, GenomicType.TRANSCRIPT);
 
         for (int closest : mClosestGenes) {
         //System.err.println(region.getLocation() + ":" + gene.getSymbol()
@@ -308,7 +309,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     List<String> items = new UniqueArrayList<String>(genes.size());
 
     for (GenomicElement gene : genes) {
-      items.add(gene.getProp(name));
+      items.add(gene.getProperty(name));
     }
 
     return Join.onSemiColon().values(items).toString();
@@ -390,7 +391,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
        */
 
       for (String type : geneIdTypes) {
-        matrix.set(row, c++, gene.getProp(type));
+        matrix.set(row, c++, gene.getProperty(type));
       }
 
       // matrix.set(row, c++, refseq);
@@ -429,7 +430,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
       boolean inExon = false;
 
-      for (GenomicRegion exon : gene.getChildren(GenomicEntity.EXON)) {
+      for (GenomicRegion exon : gene.getChildren(GenomicType.EXON)) {
         if (GenomicRegion.within(midPoint, exon)) {
           classifications.add("exonic");
           inExon = true;

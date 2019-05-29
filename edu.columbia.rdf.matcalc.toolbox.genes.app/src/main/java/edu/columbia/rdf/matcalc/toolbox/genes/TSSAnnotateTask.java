@@ -9,14 +9,12 @@ import java.util.Set;
 
 import javax.swing.SwingWorker;
 
-import org.jebtk.bioinformatics.gapsearch.FixedGapSearch;
-import org.jebtk.bioinformatics.genomic.GFF3Parser;
 import org.jebtk.bioinformatics.genomic.GenesDB;
 import org.jebtk.bioinformatics.genomic.Genome;
 import org.jebtk.bioinformatics.genomic.GenomeService;
 import org.jebtk.bioinformatics.genomic.GenomicElement;
-import org.jebtk.bioinformatics.genomic.GenomicEntity;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
+import org.jebtk.bioinformatics.genomic.GenomicType;
 import org.jebtk.bioinformatics.genomic.Strand;
 import org.jebtk.core.collections.ArrayListCreator;
 import org.jebtk.core.collections.CollectionUtils;
@@ -117,7 +115,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       GenesDB tssSearch = AnnotationService
           .getInstance().getSearch(mGenome);
 
-      List<GenomicElement> results = tssSearch.find(mGenome, newRegion, GenomicEntity.EXON);
+      List<GenomicElement> results = tssSearch.find(mGenome, newRegion, GenomicType.TRANSCRIPT);
 
       for (GenomicElement gene : results) {
         // System.err.println(region.getLocation() + ":" + gene.getSymbol() +
@@ -137,7 +135,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     int extra = 0;
 
     List<String> geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
+        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     extra += geneIdTypes.size() + 4;
 
@@ -150,7 +148,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     int c = model.getCols();
 
     geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
+        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     for (String name : geneIdTypes) {
       matrix.setColumnName(c++, mGenome + " TSS " + name);
@@ -170,7 +168,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       c = model.getCols();
 
       geneIdTypes = AnnotationService.getInstance()
-          .getGeneIdTypes(mGenome, GFF3Parser.LEVEL_EXON);
+          .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
       List<GenomicElement> results = overlappingResults.get(region)
           .get(mGenome);
@@ -245,7 +243,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
     List<String> items = new UniqueArrayList<String>(genes.size());
 
     for (GenomicElement gene : genes) {
-      items.add(gene.getProp(name));
+      items.add(gene.getProperty(name));
     }
 
     return Join.onSemiColon().values(items).toString();
@@ -317,7 +315,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
        */
 
       for (String type : geneIdTypes) {
-        matrix.set(row, c++, gene.getProp(type));
+        matrix.set(row, c++, gene.getProperty(type));
       }
 
       // matrix.set(row, c++, refseq);
@@ -356,7 +354,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
 
       boolean inExon = false;
 
-      for (GenomicRegion exon : gene.getChildren(GenomicEntity.EXON)) {
+      for (GenomicRegion exon : gene.getChildren(GenomicType.EXON)) {
         if (GenomicRegion.within(midPoint, exon)) {
           classifications.add("exonic");
           inExon = true;
