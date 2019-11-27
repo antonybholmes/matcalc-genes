@@ -11,7 +11,7 @@ import javax.swing.SwingWorker;
 
 import org.jebtk.bioinformatics.genomic.GenesDB;
 import org.jebtk.bioinformatics.genomic.Genome;
-import org.jebtk.bioinformatics.genomic.GenomeService;
+import org.jebtk.bioinformatics.genomic.ChromosomeService;
 import org.jebtk.bioinformatics.genomic.GenomicElement;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
 import org.jebtk.bioinformatics.genomic.GenomicType;
@@ -96,7 +96,7 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       } else {
         // three column format
         region = new GenomicRegion(
-            GenomeService.getInstance().chr(Genome.HG19, model.getText(i, 0)),
+            ChromosomeService.getInstance().chr(Genome.HG19, model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }

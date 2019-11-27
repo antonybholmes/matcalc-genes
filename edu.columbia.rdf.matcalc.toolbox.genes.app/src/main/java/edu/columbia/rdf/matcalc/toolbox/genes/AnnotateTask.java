@@ -12,7 +12,7 @@ import javax.swing.SwingWorker;
 import org.jebtk.bioinformatics.genomic.GFF3Parser;
 import org.jebtk.bioinformatics.genomic.GenesDB;
 import org.jebtk.bioinformatics.genomic.Genome;
-import org.jebtk.bioinformatics.genomic.GenomeService;
+import org.jebtk.bioinformatics.genomic.ChromosomeService;
 import org.jebtk.bioinformatics.genomic.GenomicElement;
 import org.jebtk.bioinformatics.genomic.GenomicEntity;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
@@ -151,7 +151,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
         // three column format
 
         region = new GenomicRegion(
-            GenomeService.getInstance().chr(mGenome, model.getText(i, 0)),
+            ChromosomeService.getInstance().chr(mGenome, model.getText(i, 0)),
             TextUtils.parseInt(model.getText(i, 1)),
             TextUtils.parseInt(model.getText(i, 2)));
       }
