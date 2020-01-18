@@ -106,9 +106,10 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
         continue;
       }
 
-      GenomicRegion newRegion = GenomicRegion.create(region.getChr(),
-          region.getStart() + mExt5p,
-          region.getEnd() - mExt3p);
+      GenomicRegion newRegion = GenomicRegion.create(region.mGenome,
+          region.mChr,
+          region.mStart + mExt5p,
+          region.mEnd - mExt3p);
 
       regions.add(newRegion);
 
