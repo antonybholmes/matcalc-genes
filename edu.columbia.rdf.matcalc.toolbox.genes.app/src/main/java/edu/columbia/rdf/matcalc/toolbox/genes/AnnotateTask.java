@@ -9,10 +9,9 @@ import java.util.Set;
 
 import javax.swing.SwingWorker;
 
-import org.jebtk.bioinformatics.genomic.GFF3Parser;
+import org.jebtk.bioinformatics.genomic.ChromosomeService;
 import org.jebtk.bioinformatics.genomic.GenesDB;
 import org.jebtk.bioinformatics.genomic.Genome;
-import org.jebtk.bioinformatics.genomic.ChromosomeService;
 import org.jebtk.bioinformatics.genomic.GenomicElement;
 import org.jebtk.bioinformatics.genomic.GenomicEntity;
 import org.jebtk.bioinformatics.genomic.GenomicRegion;
@@ -22,6 +21,7 @@ import org.jebtk.core.Mathematics;
 import org.jebtk.core.collections.CollectionUtils;
 import org.jebtk.core.collections.UniqueArrayList;
 import org.jebtk.core.io.Io;
+import org.jebtk.core.sys.SysUtils;
 import org.jebtk.core.text.Join;
 import org.jebtk.core.text.TextUtils;
 import org.jebtk.math.matrix.DataFrame;
@@ -44,6 +44,11 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
   private List<Integer> mClosestGenes;
   private MainMatCalcWindow mWindow;
   private Genome mGenome;
+  
+  private static final String INTERGENIC = "intergenic";
+  private static final String EXONIC = "exonic";
+  private static final String INTRONIC = "intronic";
+  private static final String PROMOTER = "promoter";
 
   public AnnotateTask(MainMatCalcWindow window, Genome genome,
       boolean allSearch, List<Integer> closestGenes, int ext5p, int ext3p) {
@@ -178,21 +183,16 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
             .getInstance().getSearch(mGenome, mExt5p, mExt3p);
         
         List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, 
-            region, 
-            GenomicType.TRANSCRIPT);
+            midRegion, 
+            GenomicType.TRANSCRIPT,
+            1);
+        
+        // Test midpoint
+        //List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, 
+        //    midRegion, 
+        //    GenomicType.TRANSCRIPT);
 
-        //List<GenomicElement> overlappingResults = new ArrayList<GenomicElement>(
-        //    results.size());
 
-        //for (GenomicElement gene : results) {
-          //System.err.println(region.getLocation() + ":" + gene.getSymbol()
-          //+ " " + gene.getLocation());
-
-          // Genes have been extended at tss to -5
-          //if (GenomicRegion.overlap(region, gene) != null) {
-          //  overlappingResults.add(gene);
-          //}
-        //}
 
         int n = overlappingResults.size();
 
@@ -214,7 +214,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
           Set<String> classifications = new HashSet<String>();
 
-          classify(gene, midPoint, classifications, allTssDist);
+          classify((GenomicEntity) gene, region, midPoint, classifications, allTssDist);
 
           String label = Join.onComma()
               .values(CollectionUtils
@@ -238,7 +238,10 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
           matrix.set(i, c++, TextUtils.scJoin(allTssDist));
         } else {
           // Fill the blanks
-          c = repeatNA(geneIdTypes.size() + 4, i, c, matrix);
+          c = repeatNA(geneIdTypes.size() + 1, i, c, matrix);
+          matrix.set(i, c++, INTERGENIC);
+          matrix.set(i, c++, INTERGENIC);
+          matrix.set(i, c++, TextUtils.NA);
         }
       }
 
@@ -273,7 +276,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
           
           // Select the ones of interest
           c = annotateClosest(results
-              .get(closest - 1), geneIdTypes, midPoint, i, c, matrix);
+              .get(closest - 1), geneIdTypes, region, midPoint, i, c, matrix);
         }
       }
     }
@@ -339,6 +342,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
   private int annotateClosest(final List<GenomicElement> results,
       final List<String> geneIdTypes,
+      GenomicRegion region,
       int midPoint,
       int row,
       int c,
@@ -360,7 +364,8 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
       Set<String> classifications = new HashSet<String>();
 
-      int tssDist = classify(gene,
+      int tssDist = classify((GenomicEntity) gene,
+          region,
           midPoint,
           classifications,
           new ArrayList<String>());
@@ -372,20 +377,20 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
        * AnnotationGene.getTssMidDist(gene, midPoint));
        * 
        * if (withinBounds(gene, midPoint)) { if (tssDist >= -mExt5p && tssDist
-       * <= mExt3p) { classifications.add("promoter"); }
+       * <= mExt3p) { classifications.add(PROMOTER); }
        * 
        * boolean inExon = false;
        * 
        * for (GenomicRegion exon : gene.getExons()) { if
-       * (GenomicRegion.within(midPoint, exon)) { classifications.add("exonic");
+       * (GenomicRegion.within(midPoint, exon)) { classifications.add(EXONIC);
        * inExon = true; break; } }
        * 
        * if (!inExon && midPoint >= gene.getRegion().getStart() && midPoint <=
-       * gene.getRegion().getEnd()) { classifications.add("intronic"); } } //}
+       * gene.getRegion().getEnd()) { classifications.add(INTRONIC); } } //}
        * 
-       * if (classifications.contains("exonic") &&
-       * classifications.contains("intronic")) {
-       * classifications.remove("exonic"); }
+       * if (classifications.contains(EXONIC) &&
+       * classifications.contains(INTRONIC)) {
+       * classifications.remove(EXONIC); }
        * 
        * if (classifications.size() == 0) { classifications.add("intergenic"); }
        */
@@ -402,8 +407,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       matrix.set(row, c++, gene.getTss().getLocation());
       matrix.set(row,
           c++,
-          TextUtils.commaJoin(
-              CollectionUtils.reverse(CollectionUtils.sort(classifications))));
+          TextUtils.commaJoin(CollectionUtils.reverse(CollectionUtils.sort(classifications))));
       matrix.set(row, c++, tssDist);
     } else {
       // matrix.set(row, c++, TextUtils.NA);
@@ -417,44 +421,56 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     return c;
   }
 
-  private int classify(GenomicElement gene,
+  private int classify(GenomicEntity gene,
+      GenomicRegion region,
       int midPoint,
       Set<String> classifications,
       List<String> allTssDist) {
     int tssDist = GenomicElement.getTssMidDist(gene, midPoint);
 
+    
+    
     if (withinBounds(gene, midPoint)) {
       if (tssDist >= -mExt5p && tssDist <= mExt3p) {
-        classifications.add("promoter");
+        classifications.add(PROMOTER);
       }
 
       boolean inExon = false;
 
       for (GenomicRegion exon : gene.getChildren(GenomicType.EXON)) {
         if (GenomicRegion.within(midPoint, exon)) {
-          classifications.add("exonic");
+          classifications.add(EXONIC);
           inExon = true;
           break;
         }
       }
 
       if (!inExon && midPoint >= gene.getStart() && midPoint <= gene.getEnd()) {
-        classifications.add("intronic");
+        classifications.add(INTRONIC);
       }
     }
     // }
 
-    if (classifications.contains("exonic")
-        && classifications.contains("intronic")) {
-      classifications.remove("exonic");
+    if (classifications.contains(EXONIC)
+        && classifications.contains(INTRONIC)) {
+      classifications.remove(EXONIC);
     }
 
     if (classifications.size() == 0) {
-      classifications.add("intergenic");
+      classifications.add(INTERGENIC);
+    }
+    
+    if (gene.getSymbol().equals("MYBPHL")) {
+      SysUtils.err().println("aha",
+          tssDist,
+          withinBounds(gene, midPoint),
+          gene,
+          region,
+          classifications);
     }
 
     /*
-     * if (classifications.contains("promoter")) {
+     * if (classifications.contains(PROMOTER)) {
      * allTssDist.add(Integer.toString(tssDist)); } else {
      * allTssDist.add(TextUtils.NA); }
      */

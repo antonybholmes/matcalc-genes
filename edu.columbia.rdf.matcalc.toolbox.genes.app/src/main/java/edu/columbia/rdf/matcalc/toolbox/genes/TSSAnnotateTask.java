@@ -116,7 +116,10 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       GenesDB tssSearch = AnnotationService
           .getInstance().getSearch(mGenome);
 
-      List<GenomicElement> results = tssSearch.find(mGenome, newRegion, GenomicType.TRANSCRIPT);
+      List<GenomicElement> results = tssSearch.find(mGenome, 
+          newRegion, 
+          GenomicType.TRANSCRIPT, 
+          1);
 
       for (GenomicElement gene : results) {
         // System.err.println(region.getLocation() + ":" + gene.getSymbol() +
@@ -347,6 +350,8 @@ public class TSSAnnotateTask extends SwingWorker<Void, Void> {
       Set<String> classifications,
       List<String> allTssDist) {
     int tssDist = GenomicElement.getTssMidDist(gene, midPoint);
+    
+    
 
     if (withinBounds(gene, midPoint)) {
       if (tssDist >= -mExt5p && tssDist <= mExt3p) {
