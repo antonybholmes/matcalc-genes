@@ -5,3 +5,4 @@ cache
 /.~lock.test_box_whisker.txt#
 /target
 /res/
+*.log
