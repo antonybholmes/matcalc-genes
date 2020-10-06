@@ -39,9 +39,7 @@ public class GeneAnnotationInfo extends GuiAppInfo {
    * Instantiates a new genes info.
    */
   public GeneAnnotationInfo() {
-    super("Gene Annotation", new AppVersion(1),
-        "Copyright (C) 2015-${year} Antony Holmes",
-        new GeneAnnotationIcon(),
+    super("Gene Annotation", new AppVersion(1), "Copyright (C) 2015-${year} Antony Holmes", new GeneAnnotationIcon(),
         "Annotate genomic regions with genes.");
   }
 

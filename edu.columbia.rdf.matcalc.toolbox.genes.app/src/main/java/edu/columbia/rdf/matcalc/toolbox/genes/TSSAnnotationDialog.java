@@ -28,11 +28,9 @@ import edu.columbia.rdf.matcalc.bio.GenomesPanel;
 public class TSSAnnotationDialog extends ModernDialogHelpWindow {
   private static final long serialVersionUID = 1L;
 
-  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000,
-      2000, 1000, false);
+  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
 
-  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000,
-      2000, 1000, false);
+  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
 
   // private SpeciesCombo mSpeciesCombo;
 
@@ -98,13 +96,13 @@ public class TSSAnnotationDialog extends ModernDialogHelpWindow {
 
   public List<Genome> getGenomes() {
     List<String> genomeIds = mGenomesPanel.getGenomesIds();
-    
+
     List<Genome> ret = new ArrayList<Genome>(genomeIds.size());
-    
+
     for (String g : genomeIds) {
       ret.add(Genome.fromId(g));
     }
-    
+
     return ret;
   }
 }

@@ -47,35 +47,25 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
   // private ModernRadioButton mCheckMouse =
   // new ModernRadioButton("Mouse");
 
-  private ModernTwoStateWidget mCheckOverlappingGenes = new ModernCheckSwitch(
-      "Overlapping", true);
+  private ModernTwoStateWidget mCheckOverlappingGenes = new ModernCheckSwitch("Overlapping", true);
 
-  private ModernTwoStateWidget mCheckClosestGene = new ModernCheckSwitch(
-      "1st closest", true);
+  private ModernTwoStateWidget mCheckClosestGene = new ModernCheckSwitch("1st closest", true);
 
-  private ModernTwoStateWidget mCheck2ndClosestGene = new ModernCheckSwitch(
-      "2nd closest");
+  private ModernTwoStateWidget mCheck2ndClosestGene = new ModernCheckSwitch("2nd closest");
 
-  private ModernTwoStateWidget mCheck3rdClosestGene = new ModernCheckSwitch(
-      "3rd closest");
+  private ModernTwoStateWidget mCheck3rdClosestGene = new ModernCheckSwitch("3rd closest");
 
-  private ModernTwoStateWidget mCheck4thClosestGene = new ModernCheckSwitch(
-      "4th closest");
+  private ModernTwoStateWidget mCheck4thClosestGene = new ModernCheckSwitch("4th closest");
 
-  private ModernTwoStateWidget mCheck5thClosestGene = new ModernCheckSwitch(
-      "5th closest");
+  private ModernTwoStateWidget mCheck5thClosestGene = new ModernCheckSwitch("5th closest");
 
-  private ModernTwoStateWidget mCheckOtherClosest = new ModernCheckSwitch(
-      "nth closest");
+  private ModernTwoStateWidget mCheckOtherClosest = new ModernCheckSwitch("nth closest");
 
-  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000,
-      2000, 1000, false);
+  private ModernCompactSpinner mTextExt5p = new ModernCompactSpinner(0, 100000, 2000, 1000, false);
 
-  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000,
-      1000, 1000, false);
+  private ModernCompactSpinner mTextExt3p = new ModernCompactSpinner(0, 100000, 1000, 1000, false);
 
-  private ModernClipboardTextField mTextOtherClosest = new SuggestionTextBox(
-      "e.g. 1,2,4-6");
+  private ModernClipboardTextField mTextOtherClosest = new SuggestionTextBox("e.g. 1,2,4-6");
 
   // private SpeciesCombo mSpeciesCombo;
 
@@ -150,8 +140,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
     // box.add(UI.createVGap(5));
     box.add(mCheck3rdClosestGene);
     // box.add(UI.createVGap(5));
-    box.add(new HExpandBox(mCheckOtherClosest,
-        new ModernTextBorderPanel(mTextOtherClosest, 250)));
+    box.add(new HExpandBox(mCheckOtherClosest, new ModernTextBorderPanel(mTextOtherClosest, 250)));
     // box.add(UI.createVGap(5));
     // box.add(mCheck4thClosestGene);
     // box.add(UI.createVGap(5));
@@ -168,8 +157,7 @@ public class AnnotationDialog extends ModernDialogHelpWindow {
   public void clicked(ModernClickEvent e) {
     if (e.getSource().equals(mOkButton)) {
       if (getGenomes().size() == 0) {
-        ModernMessageDialog.createWarningDialog(mParent,
-            "You must select at least one annotation set.");
+        ModernMessageDialog.createWarningDialog(mParent, "You must select at least one annotation set.");
         return;
       }
 

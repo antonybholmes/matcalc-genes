@@ -47,16 +47,14 @@ import edu.columbia.rdf.matcalc.toolbox.genes.GeneAnnotationModule;
  * The class MainGenes.
  */
 public class MainGeneAnnotation {
-  public static final void main(String[] args) throws FontFormatException,
-      IOException, SAXException, ParserConfigurationException,
-      ClassNotFoundException, InstantiationException, IllegalAccessException,
-      UnsupportedLookAndFeelException {
+  public static final void main(String[] args)
+      throws FontFormatException, IOException, SAXException, ParserConfigurationException, ClassNotFoundException,
+      InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
     AppService.getInstance().setAppInfo("gene_annotation");
 
     ThemeService.getInstance().setTheme(ColorTheme.GREEN);
 
-    ModuleLoader ml = new BioModuleLoader()
-        .addModule(GeneAnnotationModule.class);
+    ModuleLoader ml = new BioModuleLoader().addModule(GeneAnnotationModule.class);
 
     MainMatCalc.main(new GeneAnnotationInfo(), ml);
   }

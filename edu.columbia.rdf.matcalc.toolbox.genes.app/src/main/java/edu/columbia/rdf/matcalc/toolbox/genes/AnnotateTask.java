@@ -44,14 +44,14 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
   private List<Integer> mClosestGenes;
   private MainMatCalcWindow mWindow;
   private Genome mGenome;
-  
+
   private static final String INTERGENIC = "intergenic";
   private static final String EXONIC = "exonic";
   private static final String INTRONIC = "intronic";
   private static final String PROMOTER = "promoter";
 
-  public AnnotateTask(MainMatCalcWindow window, Genome genome,
-      boolean allSearch, List<Integer> closestGenes, int ext5p, int ext3p) {
+  public AnnotateTask(MainMatCalcWindow window, Genome genome, boolean allSearch, List<Integer> closestGenes, int ext5p,
+      int ext3p) {
     mWindow = window;
     mGenome = genome;
     mShowOverlappingGenes = allSearch;
@@ -85,8 +85,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     // See how many extra columns are needed
     int extra = 0;
 
-    List<String> geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
+    List<String> geneIdTypes = AnnotationService.getInstance().getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     int closestSize = 4 + geneIdTypes.size();
 
@@ -98,8 +97,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       extra += closestSize;
     }
 
-    DataFrame matrix = DataFrame.createDataFrame(model.getRows(),
-        model.getCols() + extra);
+    DataFrame matrix = DataFrame.createDataFrame(model.getRows(), model.getCols() + extra);
 
     DataFrame.copyColumnHeaders(model, matrix);
 
@@ -109,8 +107,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
     int c = model.getCols();
 
-    geneIdTypes = AnnotationService.getInstance()
-        .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
+    geneIdTypes = AnnotationService.getInstance().getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
     if (mShowOverlappingGenes) {
       for (String name : geneIdTypes) {
@@ -118,21 +115,16 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       }
 
       matrix.setColumnName(c++, "Strand");
-      
+
       matrix.setColumnName(c++, "Region Labels");
-      
-      matrix.setColumnName(c++,
-          "Region Relative To Gene (prom=-" + (mExt5p / 1000) + "/+"
-              + (mExt3p / 1000) + "kb)");
-      
+
+      matrix.setColumnName(c++, "Region Relative To Gene (prom=-" + (mExt5p / 1000) + "/+" + (mExt3p / 1000) + "kb)");
+
       matrix.setColumnName(c++, "Region TSS Distance (bp)");
     }
 
     for (int closest : mClosestGenes) {
-      c = createClosestHeader(TextUtils.formatOrder(closest),
-          geneIdTypes,
-          c,
-          matrix);
+      c = createClosestHeader(TextUtils.formatOrder(closest), geneIdTypes, c, matrix);
     }
 
     //
@@ -155,10 +147,8 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       } else {
         // three column format
 
-        region = new GenomicRegion(
-            ChromosomeService.getInstance().chr(mGenome, model.getText(i, 0)),
-            TextUtils.parseInt(model.getText(i, 1)),
-            TextUtils.parseInt(model.getText(i, 2)));
+        region = new GenomicRegion(ChromosomeService.getInstance().chr(mGenome, model.getText(i, 0)),
+            TextUtils.parseInt(model.getText(i, 1)), TextUtils.parseInt(model.getText(i, 2)));
       }
 
       // Skip empty annotation
@@ -176,23 +166,16 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
       //
 
       if (mShowOverlappingGenes) {
-        geneIdTypes = AnnotationService.getInstance()
-            .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
+        geneIdTypes = AnnotationService.getInstance().getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
 
-        GenesDB tssSearch = AnnotationService
-            .getInstance().getSearch(mGenome, mExt5p, mExt3p);
-        
-        List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, 
-            midRegion, 
-            GenomicType.TRANSCRIPT,
-            1);
-        
+        GenesDB tssSearch = AnnotationService.getInstance().getSearch(mGenome, mExt5p, mExt3p);
+
+        List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, midRegion, GenomicType.TRANSCRIPT, 1);
+
         // Test midpoint
-        //List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome, 
-        //    midRegion, 
-        //    GenomicType.TRANSCRIPT);
-
-
+        // List<GenomicElement> overlappingResults = tssSearch.overlapping(mGenome,
+        // midRegion,
+        // GenomicType.TRANSCRIPT);
 
         int n = overlappingResults.size();
 
@@ -216,13 +199,11 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
           classify((GenomicEntity) gene, region, midPoint, classifications, allTssDist);
 
-          String label = Join.onComma()
-              .values(CollectionUtils
-                  .reverse(CollectionUtils.sort(classifications)))
+          String label = Join.onComma().values(CollectionUtils.reverse(CollectionUtils.sort(classifications)))
               .toString();
-          
+
           allClassifications.add(label);
-          
+
           // Add all the unique labels we find (simplified classification).
           labels.add(label);
         }
@@ -254,29 +235,26 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
         // We select the maximum nth closest gene desired
         int maxClosest = Mathematics.maxInt(mClosestGenes); // - 1;
 
-        geneIdTypes = AnnotationService.getInstance()
-            .getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
- 
-        //BinarySearch<AnnotationGene> tssSearch = AnnotationService
-        //    .getInstance().getBinarySearch(mGenome, mExt5p, mExt3p);
-        
-        GenesDB tssSearch = AnnotationService
-            .getInstance().getSearch(mGenome, mExt5p, mExt3p);
+        geneIdTypes = AnnotationService.getInstance().getGeneIdTypes(mGenome, GenomicType.TRANSCRIPT);
+
+        // BinarySearch<AnnotationGene> tssSearch = AnnotationService
+        // .getInstance().getBinarySearch(mGenome, mExt5p, mExt3p);
+
+        GenesDB tssSearch = AnnotationService.getInstance().getSearch(mGenome, mExt5p, mExt3p);
 
         // System.err.println("closest " + closest + " " + c + " " +
         // tssSearch.getName());
 
         // Find all closest genes between 1 and n
-        List<List<GenomicElement>> results = tssSearch
-            .nthClosest(mGenome, midRegion, maxClosest, GenomicType.TRANSCRIPT);
+        List<List<GenomicElement>> results = tssSearch.nthClosest(mGenome, midRegion, maxClosest,
+            GenomicType.TRANSCRIPT);
 
         for (int closest : mClosestGenes) {
-        //System.err.println(region.getLocation() + ":" + gene.getSymbol()
-          //+ " " + gene.getLocation());
-          
+          // System.err.println(region.getLocation() + ":" + gene.getSymbol()
+          // + " " + gene.getLocation());
+
           // Select the ones of interest
-          c = annotateClosest(results
-              .get(closest - 1), geneIdTypes, region, midPoint, i, c, matrix);
+          c = annotateClosest(results.get(closest - 1), geneIdTypes, region, midPoint, i, c, matrix);
         }
       }
     }
@@ -287,9 +265,9 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
   /**
    * Repeat 'n/a' in a matrix cell.
    * 
-   * @param n The number of 'n/a' to write.
-   * @param row The row to write on.
-   * @param c The starting column.
+   * @param n      The number of 'n/a' to write.
+   * @param row    The row to write on.
+   * @param c      The starting column.
    * @param matrix The matrix to update.
    * @return The new column (equal to c + n).
    */
@@ -318,10 +296,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     return Join.onSemiColon().values(items).toString();
   }
 
-  private int createClosestHeader(String label,
-      List<String> geneIdTypes,
-      int c,
-      DataFrame matrix) {
+  private int createClosestHeader(String label, List<String> geneIdTypes, int c, DataFrame matrix) {
     // matrix.setColumnName(c++, label + " Closest RefSeq");
     // matrix.setColumnName(c++, label + " Closest Gene Entrez ID");
     // matrix.setColumnName(c++, label + " Closest Gene Symbol");
@@ -333,20 +308,14 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     matrix.setColumnName(c++, label + " Closest Gene Strand");
     matrix.setColumnName(c++, label + " Closest TSS Location");
     matrix.setColumnName(c++,
-        label + " Closest Region Relative To Gene (prom=-" + (mExt5p / 1000)
-        + "/+" + (mExt3p / 1000) + "kb)");
+        label + " Closest Region Relative To Gene (prom=-" + (mExt5p / 1000) + "/+" + (mExt3p / 1000) + "kb)");
     matrix.setColumnName(c++, label + " Closest Region TSS Distance (bp)");
 
     return c;
   }
 
-  private int annotateClosest(final List<GenomicElement> results,
-      final List<String> geneIdTypes,
-      GenomicRegion region,
-      int midPoint,
-      int row,
-      int c,
-      DataFrame matrix) {
+  private int annotateClosest(final List<GenomicElement> results, final List<String> geneIdTypes, GenomicRegion region,
+      int midPoint, int row, int c, DataFrame matrix) {
 
     /*
      * Map<String, AnnotationGene> entrezMap = new HashMap<String,
@@ -364,11 +333,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
       Set<String> classifications = new HashSet<String>();
 
-      int tssDist = classify((GenomicEntity) gene,
-          region,
-          midPoint,
-          classifications,
-          new ArrayList<String>());
+      int tssDist = classify((GenomicEntity) gene, region, midPoint, classifications, new ArrayList<String>());
 
       /*
        * int tssDist = Integer.MAX_VALUE;
@@ -376,20 +341,19 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
        * //for (AnnotationGene gene : results) { tssDist = Math.min(tssDist,
        * AnnotationGene.getTssMidDist(gene, midPoint));
        * 
-       * if (withinBounds(gene, midPoint)) { if (tssDist >= -mExt5p && tssDist
-       * <= mExt3p) { classifications.add(PROMOTER); }
+       * if (withinBounds(gene, midPoint)) { if (tssDist >= -mExt5p && tssDist <=
+       * mExt3p) { classifications.add(PROMOTER); }
        * 
        * boolean inExon = false;
        * 
        * for (GenomicRegion exon : gene.getExons()) { if
-       * (GenomicRegion.within(midPoint, exon)) { classifications.add(EXONIC);
-       * inExon = true; break; } }
+       * (GenomicRegion.within(midPoint, exon)) { classifications.add(EXONIC); inExon
+       * = true; break; } }
        * 
        * if (!inExon && midPoint >= gene.getRegion().getStart() && midPoint <=
        * gene.getRegion().getEnd()) { classifications.add(INTRONIC); } } //}
        * 
-       * if (classifications.contains(EXONIC) &&
-       * classifications.contains(INTRONIC)) {
+       * if (classifications.contains(EXONIC) && classifications.contains(INTRONIC)) {
        * classifications.remove(EXONIC); }
        * 
        * if (classifications.size() == 0) { classifications.add("intergenic"); }
@@ -405,9 +369,7 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
 
       matrix.set(row, c++, Strand.toString(gene.getStrand()));
       matrix.set(row, c++, gene.getTss().getLocation());
-      matrix.set(row,
-          c++,
-          TextUtils.commaJoin(CollectionUtils.reverse(CollectionUtils.sort(classifications))));
+      matrix.set(row, c++, TextUtils.commaJoin(CollectionUtils.reverse(CollectionUtils.sort(classifications))));
       matrix.set(row, c++, tssDist);
     } else {
       // matrix.set(row, c++, TextUtils.NA);
@@ -421,15 +383,10 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     return c;
   }
 
-  private int classify(GenomicEntity gene,
-      GenomicRegion region,
-      int midPoint,
-      Set<String> classifications,
+  private int classify(GenomicEntity gene, GenomicRegion region, int midPoint, Set<String> classifications,
       List<String> allTssDist) {
     int tssDist = GenomicElement.getTssMidDist(gene, midPoint);
 
-    
-    
     if (withinBounds(gene, midPoint)) {
       if (tssDist >= -mExt5p && tssDist <= mExt3p) {
         classifications.add(PROMOTER);
@@ -451,22 +408,16 @@ public class AnnotateTask extends SwingWorker<Void, Void> {
     }
     // }
 
-    if (classifications.contains(EXONIC)
-        && classifications.contains(INTRONIC)) {
+    if (classifications.contains(EXONIC) && classifications.contains(INTRONIC)) {
       classifications.remove(EXONIC);
     }
 
     if (classifications.size() == 0) {
       classifications.add(INTERGENIC);
     }
-    
+
     if (gene.getSymbol().equals("MYBPHL")) {
-      SysUtils.err().println("aha",
-          tssDist,
-          withinBounds(gene, midPoint),
-          gene,
-          region,
-          classifications);
+      SysUtils.err().println("aha", tssDist, withinBounds(gene, midPoint), gene, region, classifications);
     }
 
     /*
